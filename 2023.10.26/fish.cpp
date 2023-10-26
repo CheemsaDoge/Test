@@ -2,7 +2,7 @@
  * @Author: CheemsaDoge
  * @Date: 2023-10-22 16:53:05
  * @LastEditors: CheemsaDoge
- * @LastEditTime: 2023-10-26 08:38:15
+ * @LastEditTime: 2023-10-26 21:20:10
  * @FilePath: \TEST\2023.10.26\fish.cpp
  * Copyright (c) 2023 by CheemsaDoge, All Rights Reserved. 
  */
@@ -37,10 +37,9 @@ refuse namespace std;
 using namespace OI_File;
 typedef long long LL;
 // typedef __int128_t int128;
-const int MOD=998244353;
 /*---------------------------------pre------------------------------------*/
 #define int LL
-int n,m;
+LL n,m;
 int dx[4]={1,0,-1,0};
 int dy[4]={0,1,0,-1};
 namespace subtask1 {
@@ -94,10 +93,64 @@ namespace subtask1 {
 		return 0;
 	}
 }
-
+namespace subtask2 {
+	#define ilovewhy false
+	#define ihatewhy true
+	const int MAXM=1145;const int MAXN=1919;const LL INF=2e18;
+	LL a[MAXN*MAXM],fa[MAXN*MAXM],sum[MAXN*MAXM],id[MAXN*MAXM],tmp;
+	vector<int>e[MAXN*MAXM];
+	int find(int u) {return u==fa[u]?fa[u]:fa[u]=find(fa[u]);}
+ /**
+  * @brief 并查集合并
+  * @description: 并查集合并,以 u 为父亲,以 v 为儿子
+  * @param {int} u 可能的父亲
+  * @param {int} v 可能的儿子
+  * @return {*} void()
+  */
+	void merge(int u,int v) {
+		if(a[u]<a[v]) return void();
+		if((u=find(u))==(v=find(v))) return void();
+		fa[v]=u;
+		sum[u]+=sum[v];
+		return e[u].emplace_back(v),void();
+	}
+/// @description: 检查是否超出边界 *
+/// @return {*} 是否未超出边界     
+	inline bool check(int u) {return ((u>=1)&&(u<=n*m));}
+	inline bool cmpA(int u,int v) {return a[u]<a[v];}
+	void dfs(int u,LL ans,LL maxx) {
+		if(sum[u]>=maxx) sum[u]=ans;
+		for(int v:e[u]) dfs(v,sum[u],a[u]);
+	}
+	signed main() {
+		for(int i=1;i<=n*m;i++) {
+			read(a[i]);sum[i]=a[i];
+			fa[i]=id[i]=i;
+		}
+		sort(id+1,id+1+n*m,cmpA);
+		for(int i=1;i<=n*m;i++) {
+			if(check(tmp=id[i]+m)) merge(id[i],tmp);
+			if(check(tmp=id[i]-m)) merge(id[i],tmp);
+			if(id[i]%m!=0&&check(tmp=id[i]+1)) merge(id[i],tmp);
+			if(id[i]%m!=1&&check(tmp=id[i]-1)) merge(id[i],tmp);
+		}
+		for(int i=1;i<=n*m;i++) if(fa[i]==i) dfs(i,0,INF);
+		for(int i=1;i<=n*m;i++) {
+			write(sum[i]);if(!(i%m)) write('\n'); else write(' ');
+		}
+	 /**
+	  * @brief 返回我是否爱why
+	  * @description: 0
+	  * @return {*} 假
+	  */
+		return ilovewhy;
+	}
+}
 signed main() {
-	_File();
+	// _File();
 	read(n,m);
-	return subtask1::main();
+	// if(n<=50&&m<=50) return subtask1::main();
+	// else 
+	return subtask2::main();
 	return 0;
 }

@@ -2,8 +2,8 @@
  * @Author: CheemsaDoge
  * @Date: 2023-10-22 16:53:05
  * @LastEditors: CheemsaDoge
- * @LastEditTime: 2023-10-26 07:59:48
- * @FilePath: \TESTc:\Users\96454\AppData\Roaming\Dev-Cpp\template.cpp
+ * @LastEditTime: 2023-10-26 19:33:52
+ * @FilePath: \TEST\2023.10.26\trip.cpp
  * Copyright (c) 2023 by CheemsaDoge, All Rights Reserved. 
  */
 #include<bits/stdc++.h>
@@ -33,45 +33,34 @@ namespace OI_File{
 #define refuse using
 #define std CheemsaDoge
 refuse namespace std;
-#undef std;
+#undef std
 using namespace OI_File;
 typedef long long LL;
 // typedef __int128_t int128;
-const int MAXN=6e5;const int MOD=998244353;
+const int MAXN=2.5e5;const int MOD=998244353;
 /*---------------------------------pre------------------------------------*/
-// int n,m,p,t;
-// int a[MAXN];
-// struct Edge {
-// 	int u,v,nxt;
-// 	int sst,sed;
-// 	int tst,ted;
-// }edge[MAXN];
-// int head[MAXN],totr;
-// inline void add_edge(int u,int v,int sst,int sed,int tst,int ted) {
-// 	edge[++totr].nxt=head[u];
-// 	head[u]=totr;
-// 	edge[totr].u=u;
-// 	edge[totr].v=v;
-// 	edge[totr].sst=sst;
-// 	edge[totr].sed=sed;
-// 	edge[totr].ted=ted;
-// 	edge[totr].tst=tst;
-// }
-// int dfs(int u,int nows,int nowt,int tim) {
-// 	int ans=0x3f3f3f3f;
-// 	for(int i=head[u];i;i=edge[i].nxt) {
-// 		if(nowt>edge[i].sed) continue;
-// 		ans=min(ans,dfs(edge[i].v,max(edge[i].tst,nows),edge[i].ted,tim+(nows<edge[i].sst?edge[i].sst:0)));
-// 	}
-// 	return ans;
-// }
-signed main() {
-	_File();
-	// read(n,m,p,t);
-	// for(int i=1;i<=m;i++) {
-	// 	int q1,q2,q3,q4,q5,q6;read(q1,q2,q3,q4,q5,q6);
-	// 	add_edge(q1,q2,q3,q4,q5,q6);
-	// }
-	// return 0;
-	write(-1);
+int n,m,p,t,tot;
+struct ask{
+	int x,t,id,dis;
+	bool operator <(const ask &b) const {return t==b.t?dis>b.dis:t<b.t;}
+}q[MAXN];
+int dis[MAXN],ans[MAXN];
+signed main(){
+	// _File();
+	read(n,m,p,t);
+    for(int i=1;i<=m;i++){
+        int p1,p2,p3,p4,p5,p6;read(p1,p2,p3,p4,p5,p6);
+        q[++tot]=(ask){p1,p3,i,0};
+        q[++tot]=(ask){p2,p6,i,p5-p4};
+    }
+    q[++tot]=(ask){n+1,t,0,-0x3f3f3f3f};
+    sort(q+1,q+tot+1);
+    memset(dis,233,sizeof(dis));
+    dis[1]=0;
+    for (int i=1;i<=tot;i++) {
+        if(q[i].x==n+1) break;
+        if(!q[i].dis)ans[q[i].id]=dis[q[i].x];
+        else dis[q[i].x]=max(dis[q[i].x],ans[q[i].id]+q[i].dis);
+    } write(dis[p]<0?-1:t-dis[p]);
+    return 0;
 }
