@@ -1,9 +1,9 @@
 /*
  * @Author: CheemsaDoge
- * @Date: 2023-10-22 16:53:05
+ * @Date: 2023-10-27 09:44:10
  * @LastEditors: CheemsaDoge
- * @LastEditTime: 2023-10-27 08:50:23
- * @FilePath: \TEST\template.cpp
+ * @LastEditTime: 2023-10-27 12:02:51
+ * @FilePath: \TEST\2023.10.27\数字之积.cpp
  * Copyright (c) 2023 by CheemsaDoge, All Rights Reserved. 
  */
 #include<bits/stdc++.h>
@@ -39,10 +39,53 @@ typedef long long LL;
 // typedef __int128_t int128;
 const int MAXN=6e5;const int MOD=998244353;
 /*---------------------------------pre------------------------------------*/
-
-
-signed main() {
-	// _File();
-
-	return 0;
+int n,a[19];
+LL n1[55],n2[37],n3[19],n4[19],f[19][55][37][19][19];
+bool wy(int s1,int s2,int s3,int s4) {
+    LL ans=n1[s1]*n2[s2]*n3[s3]*n4[s4];
+    return ans<=n;
 }
+long long dfs(int pos,int s1,int s2,int s3,int s4,bool limit,bool lead) {
+    if(!pos) return wy(s1,s2,s3,s4);
+    if(wy(s1,s2,s3,s4)==false)return 0;
+    if(!limit&&!lead&&~f[pos][s1][s2][s3][s4]) return f[pos][s1][s2][s3][s4];
+    int up=limit?a[pos]:9;LL ans=0;
+    for(int i=0;i<=up;i++) {
+        if(!lead&&!i)continue;
+        int ss1=s1,ss2=s2,ss3=s3,ss4=s4;
+		bool bk1=false,bk2=false;
+        if(i==2) ss1++;
+        if(i==3) ss2++;
+        if(i==4) ss1+=2;
+        if(i==5) ss3++;
+        if(i==6) ss1++,ss2++;
+        if(i==7) ss4++;
+        if(i==8) ss1+=3;
+        if(i==9) ss2+=2;
+        if(limit&&i==a[pos]) bk1=true;
+        if(lead&&!i) bk2=true;
+        ans+=dfs(pos-1,ss1,ss2,ss3,ss4,bk1,bk2);
+    }
+    if(!limit&&!lead)f[pos][s1][s2][s3][s4]=ans;
+    return ans;
+}
+LL solve(LL x) {
+    int pos=0;
+    while(x) {
+        a[++pos]=x%10;
+        x/=10;
+    }
+    memset(f,-1,sizeof(f));
+    return dfs(pos,0,0,0,0,true,true);
+}
+signed main() {
+    n1[0]=n2[0]=n3[0]=n4[0]=1;
+    for(int i=1;i<=54;i++) n1[i]=n1[i-1]*2;
+    for(int i=1;i<=36;i++) n2[i]=n2[i-1]*3;
+    for(int i=1;i<=18;i++) n3[i]=n3[i-1]*5;
+    for(int i=1;i<=18;i++) n4[i]=n4[i-1]*7;
+    LL l,r;read(n,l,r);
+    write(solve(r-1)-solve(l-1));
+    return 0;
+}
+

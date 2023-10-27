@@ -1,9 +1,9 @@
 /*
  * @Author: CheemsaDoge
- * @Date: 2023-10-22 16:53:05
+ * @Date: 2023-10-27 14:50:28
  * @LastEditors: CheemsaDoge
- * @LastEditTime: 2023-10-27 08:50:23
- * @FilePath: \TEST\template.cpp
+ * @LastEditTime: 2023-10-27 16:37:52
+ * @FilePath: \TEST\2023.10.27\糖果.cpp
  * Copyright (c) 2023 by CheemsaDoge, All Rights Reserved. 
  */
 #include<bits/stdc++.h>
@@ -38,11 +38,96 @@ using namespace OI_File;
 typedef long long LL;
 // typedef __int128_t int128;
 const int MAXN=6e5;const int MOD=998244353;
+const int MAXB=788;
+namespace ODT {
+	struct node_odt {
+		int l,r;
+		mutable long long int val;
+		node_odt(int L,int R =-1,long long int V=0) : l(L), r(R),val(V) {}
+		bool operator <(const node_odt& a) const {return l<a.l;}
+	};
+	set<node_odt>odt;
+	#define Iterator set<node_odt>::iterator
+	template <typename type1> inline std::set<node_odt>::iterator split(type1 pos) {
+		Iterator it = odt.lower_bound(node_odt(pos));
+		if(it!=odt.end()&&it->l==pos) return it;it--;
+		if(it->r<pos) return odt.end();
+		int l=it->l,r=it->r;
+	    long long int v=it->val;
+	    odt.erase(it);
+		odt.insert(node_odt(l,pos-1,v));
+		return odt.insert(node_odt(pos,r,v)).first;
+	}
+	template <typename type1,typename type2> inline void assign(type1 l,type1 r,type2 v=0) {
+		Iterator itr=split(r+1);
+		Iterator itl=split(l);
+		odt.erase(itl,itr);
+		odt.insert(node_odt(l,r,v));
+	}
+	template <typename type1,typename type2> inline void add(type1 l,type1 r,type2 v)  {
+		Iterator itr=split(r+1),itl=split(l);
+		for(;itl!=itr;itl=odt.lower_bound(node_odt(itl->r+1))) itl->val+=v;
+	}
+	template <typename type1,typename type2> inline type1 kth(type2 l,type2 r,type2 k) {
+		std::vector<std::pair<long long,int> >vec;
+		Iterator itr=split(r+1);
+		Iterator itl=split(l);
+		for(;itl!=itr;itl++) vec.push_back(std::make_pair(itl->val,itl->r-itl->l+1));
+		sort(vec.begin(),vec.end());
+		for(int i=0;i<(int)vec.size();i++) {
+			k-=vec[i].second;
+			if(k<=0) return vec[i].first;
+		}
+		return -1;
+	}
+	template <typename type1,typename type2> inline type1 sum(type2 l,type2 r) {
+		Iterator itr=split(r+1);
+		Iterator itl=split(l);
+		type1 ans=0;
+		for(;itl!=itr;itl=odt.lower_bound(node_odt(itl->r+1))) {
+			ans=max(ans,itl->val);
+		}
+		return ans;
+	} 
+}
+using namespace ODT;
 /*---------------------------------pre------------------------------------*/
-
-
+int n,m,a[MAXN];
 signed main() {
 	// _File();
-
+	read(n,m);int lst=0,st=0;
+	for(int i=1;i<=n;i++) {
+		read(a[i]);
+		if(a[i]!=lst) {
+			odt.insert((node_odt){st,i-1,lst});
+			st=i;
+			lst=a[i];
+		}
+	}
+	odt.insert((node_odt){st,n,lst});
+	odt.insert((node_odt){n+1,n+1,1145141919810ll});
+	for(int i=1;i<=m;i++) {
+		int l,r;read(l,r);
+		Iterator itr=split(r+1);
+		Iterator itl=split(l);
+		LL why=sum<LL>(l,r);
+		int ll=itl->l;
+		for(;itl!=itr;itl=odt.lower_bound(node_odt(itl->r+1))) {
+			if(itl->val==why) {
+				itl->val++;
+				assign(ll,itl->l-1,why);
+				ll=itl->r+1;
+			} 
+		}
+	}
+	Iterator it=odt.lower_bound(node_odt(1));
+	LL val=it->val;
+	for(int i=1;i<=n;i++) {
+		write(val);write(' ');
+		if(i>=it->r) {
+			it=odt.lower_bound(node_odt(it->r+1));
+			val=it->val;
+		}
+	}
 	return 0;
 }
