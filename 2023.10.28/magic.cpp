@@ -1,9 +1,9 @@
 /*
  * @Author: CheemsaDoge
- * @Date: 2023-10-27 10:34:40
+ * @Date: 2023-10-28 08:32:56
  * @LastEditors: CheemsaDoge
- * @LastEditTime: 2023-10-27 20:47:04
- * @FilePath: \TEST\2023.10.27\[ZJOI2010] 数字计数.cpp
+ * @LastEditTime: 2023-10-28 16:12:41
+ * @FilePath: \TEST\2023.10.28\magic.cpp
  * Copyright (c) 2023 by CheemsaDoge, All Rights Reserved. 
  */
 #include<bits/stdc++.h>
@@ -21,13 +21,13 @@ namespace CheemsaDoge {
 	template <> inline void write <char> (char _x) {putchar(_x);}
 	template <> inline void write <char*> (char *_x) {int siz=(int)strlen(_x);for(int i=0;i<siz;i++) write(_x[i]);}
 	template <typename types,typename ... Args> inline void read(types &_x, Args &... args) {read(_x), read(args...);}
-	template <typename types,typename ... Args> inline void write(types _x, Args ... args) {write(_x),putchar(' '),write(args...);}
+	template <typename types,typename ... Args> inline void write(types _x, Args ... args) {write(_x),write(args...);}
 	using std::sort;using std::set;using std::vector;using std::pair;using std::make_pair;
 }
-namespace OI_File{
+namespace OI_File {
 	inline void _File() {
-		freopen("thisisyouriofilename.in","r",stdin);
-		freopen("thisisyouriofilename.out","w",stdout);
+		freopen("magic.in","r",stdin);
+		freopen("magic.out","w",stdout);
 	}
 }
 #define refuse using
@@ -37,45 +37,33 @@ refuse namespace std;
 using namespace OI_File;
 typedef long long LL;
 // typedef __int128_t int128;
-const int MAXN=6e5;const int MOD=998244353;
-#define int LL
+const int MAXN=210;const int MOD=998244353;
 /*---------------------------------pre------------------------------------*/
-int a[20],totr,f[50][3][50][50];
-LL l,r;
-inline void init(LL n) {
-	totr=0;
-	if(n==0) return a[1]=0,totr=1,void();
-	while(n) {
-		a[++totr]=n%10;
-		n/=10;
-	} return void();
-}
-int dfs(int pos,bool lead,int limit,int num,int sum) {
-	if(!pos) return sum;
-	if(!limit&&~f[pos][lead][num][sum]) return f[pos][lead][num][sum];
-	int up=limit?a[pos]:9;LL ans=0;
-	for(int i=0;i<=up;i++) {
-		if(num==0) ans+=dfs(pos-1,lead||i,limit&&(i==up),num,lead?sum+(i==num):0);
-		else ans+=dfs(pos-1,lead||i,limit&&(i==up),num,sum+(num==i));
-	} return f[pos][lead][num][sum]=ans;
-}
-inline LL solve(int num) {
-	int up=a[totr];LL ans=0;
-	for(int i=0;i<=up;i++) {
-		if(num==0) ans+=dfs(totr-1,i,(i==up),num,0);
-		else ans+=dfs(totr-1,i,(i==up),num,(num==i));
-	} return ans;
-}
-int ans[11];
-signed main() {
-	// _File();
-	read(l,r);init(r);
-	memset(f,-1,sizeof(f));
-	for(int i=0;i<=9;i++) ans[i]=solve(i);
-	init(l-1);memset(f,-1,sizeof(f));
-	if(totr==1) {
-		for(int i=0;i<a[1];i++) ans[i]--;
-	} else for(int i=0;i<=9;i++) ans[i]-=solve(i);
-	for(int i=0;i<=9;i++) write(ans[i]),write(' ');
-	return 0;
+typedef pair<int, int>pii;
+const int N=80,M=152;
+int dp[N][N][M],n,a[N],maxx;
+int main() {
+    _File();read(n);
+    for (int i=1;i<=n;++i) read(a[i]),maxx=max(maxx, a[i]);
+    for (int i=1;i<=n;++i) {
+        for (int k=0;k<=maxx;++k) dp[i][i][k]=0x3f3f3f3f;
+        dp[i][i][a[i]/2]=a[i];
+    }
+    for (int len=2;len<=n;++len) {
+        for (int l=1;l<=n-len+1;++l) {
+            int r=l+len-1;
+            for(int k=0;k<=maxx;++k) dp[l][r][k]=0x3f3f3f3f;
+            for(int mid=l+1;mid<=r;++mid) for(int p=a[r]/2;p<=maxx;++p) for(int k=a[r]/2;k<=p;++k) dp[l][r][p]=min(dp[l][r][p],dp[l][mid-1][p-k]+dp[mid][r][k]);
+            for (int p=0;p<=maxx;++p) {
+                int nxt=max(p,a[r])/2;
+                dp[l][r][nxt]=min(dp[l][r][nxt],dp[l][r-1][p]+max(0,a[r]-p));
+            }
+        }
+    }
+    for (int i=1;i<=n;++i) {
+        int ret=0x3f3f3f3f;
+        for (int k=a[i]/2;k<=maxx;++k) ret=min(ret,dp[1][i][k]);
+        write(ret,' ');
+    }
+    return 0;
 }
