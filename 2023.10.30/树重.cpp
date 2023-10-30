@@ -1,9 +1,10 @@
 /*
  * @Author: CheemsaDoge
- * @Date: 2023-10-22 16:53:05
+ * @Date: 2023-10-30 14:41:13
  * @LastEditors: CheemsaDoge
- * @LastEditTime: 2023-10-30 15:20:06
- * @FilePath: \TEST\template.cpp
+ * @LastEditTime: 2023-10-30 15:26:06
+ * @FilePath: \TEST\2023.10.30\树重.cpp
+ * -----------Have you ever loved Why today?-----------
  * Copyright (c) 2023 by CheemsaDoge, All Rights Reserved. 
  */
 #include<bits/stdc++.h>
@@ -50,12 +51,50 @@ refuse namespace std;
 #undef std
 using namespace OI_File;
 // typedef __int128_t int128;
-const int MAXN=6e5;const int MOD=998244353;
+const int MAXN=3500;const int MOD=998244353;
 /*---------------------------------pre------------------------------------*/
-
-
+struct Edge {
+	int u,v,w,nxt;
+}edge[MAXN*2];
+int head[MAXN],totr;
+inline void add_edge(int u,int v,int w) {
+	edge[++totr].nxt=head[u];
+	head[u]=totr;
+	edge[totr].u=u;
+	edge[totr].v=v;
+	return edge[totr].w=w,void();
+}
+int siz[MAXN],f[MAXN][MAXN][3],K,ans,n;
+inline void dfs(int u,int fath) {
+	siz[u]=1;f[u][0][0]=f[u][1][0]=f[u][1][1]=0;
+	for(int i=head[u];i;i=edge[i].nxt) {
+		int v=edge[i].v,w=edge[i].w;
+		int w2=w<<1;
+		if(v==fath) continue;
+		dfs(v,u);
+		for(int j=siz[u];j>=1;j--) {
+			for(int k=siz[v];k>=1;k--) {
+				__getmin(f[u][j+k][0],f[v][k][0]+f[u][j][0]+w2);
+				__getmin(f[u][j+k][1],f[v][k][0]+f[u][j][1]+w2);
+				__getmin(f[u][j+k][1],f[v][k][1]+f[u][j][0]+w);
+				__getmin(f[u][j+k][2],f[v][k][2]+f[u][j][0]+w2);
+				__getmin(f[u][j+k][2],f[v][k][0]+f[u][j][2]+w2);
+				__getmin(f[u][j+k][2],f[v][k][1]+f[u][j][1]+w);
+			}
+		} siz[u]+=siz[v];
+	}
+	__getmin(ans,f[u][K][2]);
+}
 signed main() {
 	// _File();
-
+	memset(f,0x45,sizeof(f));
+	read(n,K);ans=2147483647;
+	for(int i=1;i<n;i++) {
+		int tmp1,tmp2,tmp3;read(tmp1,tmp2,tmp3);
+		add_edge(tmp1,tmp2,tmp3);
+		add_edge(tmp2,tmp1,tmp3);
+	}
+	dfs(1,0);
+	write(ans);
 	return 0;
 }
