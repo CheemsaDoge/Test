@@ -1,0 +1,7 @@
+只有一组数据而不是题目说的The input will contain several test cases
+输出格式参照题目
+约定：
+1-3:n<=100
+4-6:n<=1000
+7-9:n<=10000
+10:n=100000
