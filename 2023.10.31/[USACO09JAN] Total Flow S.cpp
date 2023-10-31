@@ -1,9 +1,9 @@
 /*
  * @Author: CheemsaDoge
- * @Date: 2023-10-31 09:55:24
+ * @Date: 2023-10-31 16:52:14
  * @LastEditors: CheemsaDoge
- * @LastEditTime: 2023-10-31 19:15:33
- * @FilePath: \TEST\2023.10.31\[SCOI2007] 蜥蜴.cpp
+ * @LastEditTime: 2023-10-31 16:57:33
+ * @FilePath: \TEST\2023.10.31\[USACO09JAN] Total Flow S.cpp
  * -----------Have you ever loved Why today?-----------
  * Copyright (c) 2023 by CheemsaDoge, All Rights Reserved. 
  */
@@ -20,7 +20,7 @@ namespace CheemsaDoge {
 	template <typename types,typename ... args> inline void __getmax(types &_a,const args ... _b) {_a=getmax(_a,_b...);}
 	template <typename type1> inline type1 abs(const type1 _a) {return _a<0?-_a:_a;}
 	template <typename type1> inline void swap(type1 &_x,type1 &_y) {_x+=_y;_y=_x-_y;_x-=_y;}
-	inline void sread(char *_in) {int _ch=getchar(),top=-1;while(_ch==' '||_ch=='\r'||_ch=='\n'||_ch=='\t') _ch=getchar();while(!(_ch==' '||_ch=='\r'||_ch=='\n'||_ch=='\t')) _in[++top]=_ch,_ch=getchar();_in[++top]=0;}
+	inline void sread(char *_in) {int _ch=getchar(),top=0;while(_ch==' '||_ch=='\r'||_ch=='\n'||_ch=='\t') _ch=getchar();while(!(_ch==' '||_ch=='\r'||_ch=='\n'||_ch=='\t')) _in[++top]=_ch,_ch=getchar();_in[++top]=0;}
 	template <typename type1> inline void read(type1 &_x) {_x=0;type1 _w=1,_ch=getchar();while(!isdigit(_ch)&&_ch!='-')_ch=getchar();if(_ch=='-')_w=-1,_ch=getchar();while(isdigit(_ch))_x=(_x<<3)+(_x<<1)+(_ch^'0'),_ch=getchar();_x=_x*_w;}//fast input
 	template <> inline void read <char>(char &_in) {_in=(char)getchar();while(_in==' '||_in=='\n') _in=(char)getchar();}
 /** @brief 计算某数的多次方对mod取模后的答案 
@@ -51,96 +51,68 @@ refuse namespace std;
 #undef std
 using namespace OI_File;
 // typedef __int128_t int128;
-const int MAXN=10330;const int MOD=998244353;
-namespace Graph {
-    struct Edge {
-        int u,v,nxt;
-        LL w;
-    }edge[1000000];
-    int head[MAXN],totr=1;
-    inline void add_edge(int u,int v,LL w) {
-        edge[++totr].nxt=head[u];
-        head[u]=totr;
-        edge[totr].u=u;
-        edge[totr].v=v;
-        edge[totr].w=w;
-    }
-}using namespace Graph;
-namespace EK { /*namespace CheemsaDoge and Graph is necessary*/
-    LL ans=0;
-    int pre[MAXN],n,m,s,t;
-    bool vis[MAXN];
-    LL dis[MAXN];
-    inline bool super_bfs() {
-        std::queue<int>que;
-        que.push(s);memset(vis,0,sizeof(vis));
-        vis[s]=true;dis[s]=2147483647;
-        while(!que.empty()) {
-            int u=que.front();
-            que.pop();
-            for(int i=head[u];i;i=edge[i].nxt) {
-                if(!edge[i].w) continue;
-                int v=edge[i].v;
-                if(vis[v]==1) continue;
-                dis[v]=CheemsaDoge::min(dis[u],edge[i].w);
-                pre[v]=i;que.push(v);vis[v]=true;
-                if(v==t) return true;
-            }
-        }
-        return false;
-    }
-    inline void update() {
-        int u=t;
-        while(u!=s) {
-            int i=pre[u];
-            edge[i].w-=dis[t];
-            edge[i^1].w+=dis[t];
-            u=edge[i].u;
-        } return ans+=dis[t],void();
-    }
-    inline void calc() {
-        while(super_bfs()) update();
-    }
-}
-using namespace EK;
+const int MAXN=300;const int MOD=998244353;
 /*---------------------------------pre------------------------------------*/
-char s1[300];
-int d,k;
-int hi[8000][8000];
-int x[16000],y[16000],zn[1000][1000];
-signed main() {
-	read(n,m,d);
-	for(int i=1;i<=n;i++) {
-	    scanf("%s",s1);
-	    for(int j=0;j<m;j++) {
-	        hi[i][j+1]=int(s1[j]-'0');
-	        if(hi[i][j+1]!=0) k++,x[k]=i,y[k]=j+1,zn[i][j+1]=k;
-	    }
-	}
-	int tot=0;
-	for(int i=1;i<=n;i++) for(int j=1;j<=m;j++) if(hi[i][j]!=0) if(i<=d||i+d>n||j<=d||j+d>m) add_edge(zn[i][j]+k,2*k+1,2147483647),add_edge(2*k+1,zn[i][j]+k,0);//2*k+1为超级汇点，可以跳出去就连边
-	for(int i=1;i<=n;i++) {
-	    scanf("%s",s1);
-	    for(int j=0;j<m;j++)
-	    if(s1[j]=='L') {
-	        int v=zn[i][j+1];
-	        tot++;
-	        add_edge(0,v,1); 
-	        add_edge(v,0,0);
-	    }
-	}
-	for(int i=1;i<=k;i++) add_edge(i,i+k,hi[x[i]][y[i]]),add_edge(i+k,i,0);
-	for(int i=1;i<=k;i++) for(int j=1;j<=k;j++) {
-	        if(i==j) continue;
-	        if((x[i]-x[j])*(x[i]-x[j])+(y[i]-y[j])*(y[i]-y[j])<=d*d) add_edge(i+k,j,2147483647),add_edge(j,i+k,0); 
-	    }
-	s=0;
-	t=2*k+1;
-	calc();
-	write(tot-ans);
-	return 0;
-	
-
+LL ans=0;
+struct Edge {
+	int u,v,nxt;
+	LL w;
+}edge[20000];
+int head[MAXN],totr=1;
+inline void add_edge(int u,int v,LL w) {
+	edge[++totr].nxt=head[u];
+	head[u]=totr;
+	edge[totr].u=u;
+	edge[totr].v=v;
+	edge[totr].w=w;
 }
-//0,1,5,8,24,30
-//2,1,1,1,1,1
+int pre[MAXN],n,m,s,t;
+bool vis[MAXN];
+LL dis[MAXN];
+inline bool super_bfs() {
+	std::queue<int>que;
+	que.push(s);memset(vis,0,sizeof(vis));
+	vis[s]=true;dis[s]=2147483647;
+	while(!que.empty()) {
+		int u=que.front();
+		que.pop();
+		for(int i=head[u];i;i=edge[i].nxt) {
+			if(!edge[i].w) continue;
+			int v=edge[i].v;
+			if(vis[v]==1) continue;
+			dis[v]=min(dis[u],edge[i].w);
+			pre[v]=i;que.push(v);vis[v]=true;
+			if(v==t) return true;
+		}
+	}
+	return false;
+}
+inline void update() {
+	int u=t;
+	while(u!=s) {
+		int i=pre[u];
+		edge[i].w-=dis[t];
+		edge[i^1].w+=dis[t];
+		u=edge[i].u;
+	} return ans+=dis[t],void();
+}
+LL ve[300][330];
+signed main() {
+	// _File();
+	read(n);s=0;t=25;
+	for(int i=1;i<=n;i++) {
+		char tmp1,tmp2;LL tmp3;read(tmp1,tmp2,tmp3);
+		ve[tmp1-'A'][tmp2-'A']+=tmp3;
+		// ve[tmp2][tmp1]+=tmp3;
+		// add_edge(tmp1,tmp2,tmp3);
+		// add_edge(tmp2,tmp1,tmp3);
+	}
+	for(int i=0;i<=60;i++) for(int j=0;j<=60;j++) 
+		if(ve[i][j]) {
+			add_edge(i,j,ve[i][j]);
+			add_edge(j,i,0);
+		}
+	while(super_bfs()) update();
+	write(ans);
+	return 0;
+}

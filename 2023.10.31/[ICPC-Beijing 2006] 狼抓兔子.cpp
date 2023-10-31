@@ -1,9 +1,9 @@
 /*
  * @Author: CheemsaDoge
- * @Date: 2023-10-31 09:55:24
+ * @Date: 2023-10-31 21:08:09
  * @LastEditors: CheemsaDoge
- * @LastEditTime: 2023-10-31 19:15:33
- * @FilePath: \TEST\2023.10.31\[SCOI2007] 蜥蜴.cpp
+ * @LastEditTime: 2023-10-31 21:22:12
+ * @FilePath: \TEST\2023.10.31\[ICPC-Beijing 2006] 狼抓兔子.cpp
  * -----------Have you ever loved Why today?-----------
  * Copyright (c) 2023 by CheemsaDoge, All Rights Reserved. 
  */
@@ -20,7 +20,7 @@ namespace CheemsaDoge {
 	template <typename types,typename ... args> inline void __getmax(types &_a,const args ... _b) {_a=getmax(_a,_b...);}
 	template <typename type1> inline type1 abs(const type1 _a) {return _a<0?-_a:_a;}
 	template <typename type1> inline void swap(type1 &_x,type1 &_y) {_x+=_y;_y=_x-_y;_x-=_y;}
-	inline void sread(char *_in) {int _ch=getchar(),top=-1;while(_ch==' '||_ch=='\r'||_ch=='\n'||_ch=='\t') _ch=getchar();while(!(_ch==' '||_ch=='\r'||_ch=='\n'||_ch=='\t')) _in[++top]=_ch,_ch=getchar();_in[++top]=0;}
+	inline void sread(char *_in) {int _ch=getchar(),top=0;while(_ch==' '||_ch=='\r'||_ch=='\n'||_ch=='\t') _ch=getchar();while(!(_ch==' '||_ch=='\r'||_ch=='\n'||_ch=='\t')) _in[++top]=_ch,_ch=getchar();_in[++top]=0;}
 	template <typename type1> inline void read(type1 &_x) {_x=0;type1 _w=1,_ch=getchar();while(!isdigit(_ch)&&_ch!='-')_ch=getchar();if(_ch=='-')_w=-1,_ch=getchar();while(isdigit(_ch))_x=(_x<<3)+(_x<<1)+(_ch^'0'),_ch=getchar();_x=_x*_w;}//fast input
 	template <> inline void read <char>(char &_in) {_in=(char)getchar();while(_in==' '||_in=='\n') _in=(char)getchar();}
 /** @brief 计算某数的多次方对mod取模后的答案 
@@ -51,96 +51,91 @@ refuse namespace std;
 #undef std
 using namespace OI_File;
 // typedef __int128_t int128;
-const int MAXN=10330;const int MOD=998244353;
-namespace Graph {
-    struct Edge {
-        int u,v,nxt;
-        LL w;
-    }edge[1000000];
-    int head[MAXN],totr=1;
-    inline void add_edge(int u,int v,LL w) {
-        edge[++totr].nxt=head[u];
-        head[u]=totr;
-        edge[totr].u=u;
-        edge[totr].v=v;
-        edge[totr].w=w;
-    }
-}using namespace Graph;
-namespace EK { /*namespace CheemsaDoge and Graph is necessary*/
-    LL ans=0;
-    int pre[MAXN],n,m,s,t;
-    bool vis[MAXN];
-    LL dis[MAXN];
-    inline bool super_bfs() {
-        std::queue<int>que;
-        que.push(s);memset(vis,0,sizeof(vis));
-        vis[s]=true;dis[s]=2147483647;
-        while(!que.empty()) {
-            int u=que.front();
-            que.pop();
-            for(int i=head[u];i;i=edge[i].nxt) {
-                if(!edge[i].w) continue;
-                int v=edge[i].v;
-                if(vis[v]==1) continue;
-                dis[v]=CheemsaDoge::min(dis[u],edge[i].w);
-                pre[v]=i;que.push(v);vis[v]=true;
-                if(v==t) return true;
-            }
-        }
-        return false;
-    }
-    inline void update() {
-        int u=t;
-        while(u!=s) {
-            int i=pre[u];
-            edge[i].w-=dis[t];
-            edge[i^1].w+=dis[t];
-            u=edge[i].u;
-        } return ans+=dis[t],void();
-    }
-    inline void calc() {
-        while(super_bfs()) update();
-    }
-}
-using namespace EK;
-/*---------------------------------pre------------------------------------*/
-char s1[300];
-int d,k;
-int hi[8000][8000];
-int x[16000],y[16000],zn[1000][1000];
-signed main() {
-	read(n,m,d);
-	for(int i=1;i<=n;i++) {
-	    scanf("%s",s1);
-	    for(int j=0;j<m;j++) {
-	        hi[i][j+1]=int(s1[j]-'0');
-	        if(hi[i][j+1]!=0) k++,x[k]=i,y[k]=j+1,zn[i][j+1]=k;
-	    }
-	}
-	int tot=0;
-	for(int i=1;i<=n;i++) for(int j=1;j<=m;j++) if(hi[i][j]!=0) if(i<=d||i+d>n||j<=d||j+d>m) add_edge(zn[i][j]+k,2*k+1,2147483647),add_edge(2*k+1,zn[i][j]+k,0);//2*k+1为超级汇点，可以跳出去就连边
-	for(int i=1;i<=n;i++) {
-	    scanf("%s",s1);
-	    for(int j=0;j<m;j++)
-	    if(s1[j]=='L') {
-	        int v=zn[i][j+1];
-	        tot++;
-	        add_edge(0,v,1); 
-	        add_edge(v,0,0);
-	    }
-	}
-	for(int i=1;i<=k;i++) add_edge(i,i+k,hi[x[i]][y[i]]),add_edge(i+k,i,0);
-	for(int i=1;i<=k;i++) for(int j=1;j<=k;j++) {
-	        if(i==j) continue;
-	        if((x[i]-x[j])*(x[i]-x[j])+(y[i]-y[j])*(y[i]-y[j])<=d*d) add_edge(i+k,j,2147483647),add_edge(j,i+k,0); 
-	    }
-	s=0;
-	t=2*k+1;
-	calc();
-	write(tot-ans);
-	return 0;
-	
+inline long long netflow(int s, int t, std::vector<std::vector<long long>> cap) {
+    const long long INF = 0x3f3f3f3f3f3f3f3f;
+    int n = (int)cap.size();
+    std::vector<int> pre(n), cur(n, 0), dep(n, 0), num(n, 0);
+    std::vector<long long> f(num[0] = n);
+    int u = s;
+    long long flow = INF, maxflow = 0;
 
+    while (dep[u] < n) {
+        f[u] = flow;
+        bool ok = false;
+
+        for (int v = cur[u]; v < n; v++) {
+            if (!cap[u][v] || dep[u] != dep[v] + 1)
+                continue;
+
+            ok = true, pre[v] = u, cur[u] = v, flow = std::min(cap[u][v], flow), u = v;
+
+            if (u == t) {
+                maxflow += flow;
+
+                while (u != s) {
+                    cap[pre[u]][u] -= flow;
+                    cap[u][pre[u]] += flow;
+                    u = pre[u];
+                }
+
+                flow = INF;
+            }
+
+            break;
+        }
+
+        if (ok)
+            continue;
+
+        if (--num[dep[u]] == 0)
+            break;
+
+        int c = -1;
+
+        for (int v = 0; v < n; v++)
+            if (cap[u][v] && (c == -1 || dep[v] < dep[c]))
+                c = v;
+
+        cur[u] = c, num[dep[u] = (~c ? dep[c] : n) + 1]++;
+
+        if (u != s)
+            u = pre[u], flow = f[u];
+    }
+
+    return maxflow;
 }
-//0,1,5,8,24,30
-//2,1,1,1,1,1
+#define add_edge(u,v,w) cap[u - 1][v - 1] += w;
+int main() {
+    int n, m, s, t,tot;
+	read(n,m);
+	t=tot=n*m;
+	s=1;
+	std::vector<std::vector<long long>> cap(n, std::vector<long long>(n));
+
+	for(int i=1;i<=n;i++){
+		for(int j=1;j<m;j++){
+			int w;
+			read(w);
+			add_edge((i-1)*m+j,(i-1)*m+j+1,w);
+			add_edge((i-1)*m+j+1,(i-1)*m+j,w);
+		}
+	}
+	for(int i=1;i<n;i++){
+		for(int j=1;j<=m;j++){
+			int w;
+			read(w);
+			add_edge((i-1)*m+j,i*m+j,w);
+			add_edge(i*m+j,(i-1)*m+j,w);
+		}
+	}
+	for(int i=1;i<n;i++){
+		for(int j=1;j<m;j++){
+			int w;
+			read(w);
+			add_edge((i-1)*m+j,i*m+j+1,w);
+			add_edge(i*m+j+1,(i-1)*m+j,w);
+		}
+	}
+    printf("%lld\n", netflow(s - 1, t - 1, cap));
+    return 0;
+}
