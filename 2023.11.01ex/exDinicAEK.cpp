@@ -1,12 +1,3 @@
-/*
- * @Author: CheemsaDoge
- * @Date: 2023-10-31 21:08:09
- * @LastEditors: CheemsaDoge
- * @LastEditTime: 2023-11-01 10:58:54
- * @FilePath: \TEST\2023.10.31\[ICPC-Beijing 2006] 狼抓兔子.cpp
- * -----------Have you ever loved Why today?-----------
- * Copyright (c) 2023 by CheemsaDoge, All Rights Reserved. 
- */
 #include<bits/stdc++.h>
 namespace CheemsaDoge {
 	typedef long long LL;
@@ -38,25 +29,13 @@ namespace CheemsaDoge {
 	template <typename types,typename ... Args> inline void read(types &_x, Args &... args) {read(_x), read(args...);}
 	template <typename types,typename ... Args> inline void write(types _x, Args ... args) {write(_x),putchar(' '),write(args...);}
 	using std::sort;using std::set;using std::vector;using std::pair;using std::make_pair;
-}
-namespace OI_File{
-	inline void _File() {
-		freopen("thisisyouriofilename.in","r",stdin);
-		freopen("thisisyouriofilename.out","w",stdout);
-	}
-}
-#define refuse using
-#define std CheemsaDoge
-refuse namespace std;
-#undef std
-using namespace OI_File;
-// typedef __int128_t int128;
-const int MAXN=1100005;const int MOD=998244353;
+} using namespace CheemsaDoge;
+const int MAXN=300;const int MOD=998244353;
 namespace Graph {
     struct Edge {
         int u,v,nxt;
         LL w;
-    }edge[6000015];
+    }edge[20000];
     int head[MAXN],totr=1;
     inline void add_edge(int u,int v,LL w) {
         edge[++totr].nxt=head[u];
@@ -66,72 +45,112 @@ namespace Graph {
         edge[totr].w=w;
     }
 } using namespace Graph;
-namespace Dinic { /*namespace CheemsaDoge and Graph is necessary*/
-    int n,m,s,t,now[MAXN];LL dis[MAXN];
-    const LL INF=2147483647;
-    bool bfs() {
-        for(int i=1;i<=n;i++) dis[i]=INF;
-        std::queue<int>que;
-        dis[s]=0;now[s]=head[s];que.push(s);
-        while(!que.empty()) {
-            int u=que.front();que.pop();
-            for(int i=head[u];i;i=edge[i].nxt) {
-                int v=edge[i].v;
-                if(dis[v]!=INF||!edge[i].w) continue;
-                dis[v]=dis[u]+1;que.push(v);
-                now[v]=head[v];
-                if(v==t) return bool(true);
-            }
-        }
-        return bool(false);
-    }
-    LL dfs(int u,LL lst=2e18) {
-        if(u==t) return lst;
-        LL k,res=0;
-        for(int i=now[u];i&&lst;i=edge[i].nxt) {
-            now[u]=i;int v=edge[i].v;
-            if(dis[v]!=dis[u]+1||!edge[i].w) continue;
-            k=dfs(v,CheemsaDoge::min(lst,edge[i].w));
-            if(k==0) dis[v]=INF;
-            edge[i].w-=k;edge[i^1].w+=k;
-            res+=k;lst-=k;
-        }
-        return res;
-    }
-    LL calc() {LL ans=0;while(bfs()) ans+=dfs(s); return ans;}
-} using namespace Dinic;
-int f,d,tot;
-signed main() {
-	// _File();
-	int tmp1,tmp2;
-	read(tmp1,tmp2);
-	n=tmp1*tmp2;
-	t=tot=tmp1*tmp2;
-	s=1;
-	for(int i=1;i<=tmp1;i++){
-		for(int j=1;j<tmp2;j++){
-			int w;
-			read(w);
-			add_edge((i-1)*tmp2+j,(i-1)*tmp2+j+1,w);
-			add_edge((i-1)*tmp2+j+1,(i-1)*tmp2+j,w);
+const int INF=2e9+5;
+/*EK*/ 
+namespace EK {
+	LL ans;
+	int n,m,s,t,pre[MAXN];
+	LL dis[MAXN];
+	bool vis[MAXN];
+	bool bfs() {
+		memset(vis,false,sizeof(vis));
+		std::queue<int>que;
+		que.push(s);
+		dis[s]=INF;vis[s]=true;
+		while(!que.empty()) {
+			int u=que.front();que.pop();
+			for(int i=head[u];i;i=edge[i].nxt) {
+				int v=edge[i].v;
+				if(vis[v]||!edge[i].w) continue;
+				pre[v]=i;
+				vis[v]=true;que.push(v);
+				dis[v]=min(dis[u],edge[i].w);
+				if(v==t) return true;
+			}
 		}
+		return false;
 	}
-	for(int i=1;i<tmp1;i++){
-		for(int j=1;j<=tmp2;j++){
-			int w;
-			read(w);
-			add_edge((i-1)*tmp2+j,i*tmp2+j,w);
-			add_edge(i*tmp2+j,(i-1)*tmp2+j,w);
+	inline void update() {
+		int u=t;
+		while(u!=s) {
+			int i=pre[u];
+			edge[i].w-=dis[t];
+			edge[i^1].w+=dis[t];
+			u=edge[i].u;
+		} return ans+=dis[t],void();
+	}
+	inline void calc() {while(bfs()) update();}
+	LL ve[300][330];
+	signed main() {
+		// _File();
+		read(n,m,s,t);
+		for(int i=1;i<=m;i++) {
+			int tmp1,tmp2;LL tmp3;read(tmp1,tmp2,tmp3);
+			ve[tmp1][tmp2]+=tmp3;
+			// ve[tmp2][tmp1]+=tmp3;
+			// add_edge(tmp1,tmp2,tmp3);
+			// add_edge(tmp2,tmp1,tmp3);
 		}
+		for(int i=1;i<=n;i++) for(int j=1;j<=n;j++) 
+			if(ve[i][j]) {
+				add_edge(i,j,ve[i][j]);
+				add_edge(j,i,0);
+			}
+		calc();
+		write(ans);
+		return 0;
 	}
-	for(int i=1;i<tmp1;i++){
-		for(int j=1;j<tmp2;j++){
-			int w;
-			read(w);
-			add_edge((i-1)*tmp2+j,i*tmp2+j+1,w);
-			add_edge(i*tmp2+j+1,(i-1)*tmp2+j,w);
+}
+namespace Dinic {
+	int s,t,n,m,now[MAXN];
+	LL dis[MAXN];
+	bool bfs() {
+		for(int i=1;i<=n;i++) dis[i]=1145141919810ll;
+		std::queue<int>que;
+		que.push(s);dis[s]=0;now[s]=head[s];
+		while(!que.empty()) {
+			int u=que.front();que.pop();
+			for(int i=head[u];i;i=edge[i].nxt) {
+				int v=edge[i].v;
+				if(dis[v]!=1145141919810ll||!edge[i].w) continue;
+				dis[v]=dis[u]+1;
+				que.push(v);now[v]=head[v];
+				if(v==t) return true;
+			}
 		}
+		return false;
 	}
-	write(calc());
-	return 0;
+	LL dfs(int u,LL lst=2e18+7) {
+		if(u==t) return lst;
+		LL k,res=0;
+		for(int i=now[u];i;i=edge[i].nxt) {
+			now[u]=i;
+			int v=edge[i].v;
+			if(dis[v]!=dis[u]+1||!edge[i].w) continue;
+			k=dfs(v,min(lst,edge[i].w));
+			if(!k) dis[v]=INF;
+			edge[i].w-=k;edge[i^1].w+=k;
+			res+=k;lst-=k;
+		} return res;
+	}
+	LL calc() {LL ans=0;while(bfs()) ans+=dfs(s); return ans;}
+	LL ve[300][330];
+	signed main() {
+		// _File();
+		read(n,m,s,t);
+		for(int i=1;i<=m;i++) {
+			int tmp1,tmp2;LL tmp3;read(tmp1,tmp2,tmp3);
+			ve[tmp1][tmp2]+=tmp3;
+		}
+		for(int i=1;i<=n;i++) for(int j=1;j<=n;j++) 
+			if(ve[i][j]) {
+				add_edge(i,j,ve[i][j]);
+				add_edge(j,i,0);
+			}
+		write(calc());
+		return 0;
+	}
+}
+int main() {
+	Dinic::main();
 }

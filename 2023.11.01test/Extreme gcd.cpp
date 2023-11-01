@@ -1,9 +1,9 @@
 /*
  * @Author: CheemsaDoge
- * @Date: 2023-10-31 21:08:09
+ * @Date: 2023-11-01 08:47:10
  * @LastEditors: CheemsaDoge
- * @LastEditTime: 2023-11-01 10:58:54
- * @FilePath: \TEST\2023.10.31\[ICPC-Beijing 2006] 狼抓兔子.cpp
+ * @LastEditTime: 2023-11-01 09:06:01
+ * @FilePath: \TEST\2023.11.01test\Extreme gcd.cpp
  * -----------Have you ever loved Why today?-----------
  * Copyright (c) 2023 by CheemsaDoge, All Rights Reserved. 
  */
@@ -51,87 +51,19 @@ refuse namespace std;
 #undef std
 using namespace OI_File;
 // typedef __int128_t int128;
-const int MAXN=1100005;const int MOD=998244353;
-namespace Graph {
-    struct Edge {
-        int u,v,nxt;
-        LL w;
-    }edge[6000015];
-    int head[MAXN],totr=1;
-    inline void add_edge(int u,int v,LL w) {
-        edge[++totr].nxt=head[u];
-        head[u]=totr;
-        edge[totr].u=u;
-        edge[totr].v=v;
-        edge[totr].w=w;
-    }
-} using namespace Graph;
-namespace Dinic { /*namespace CheemsaDoge and Graph is necessary*/
-    int n,m,s,t,now[MAXN];LL dis[MAXN];
-    const LL INF=2147483647;
-    bool bfs() {
-        for(int i=1;i<=n;i++) dis[i]=INF;
-        std::queue<int>que;
-        dis[s]=0;now[s]=head[s];que.push(s);
-        while(!que.empty()) {
-            int u=que.front();que.pop();
-            for(int i=head[u];i;i=edge[i].nxt) {
-                int v=edge[i].v;
-                if(dis[v]!=INF||!edge[i].w) continue;
-                dis[v]=dis[u]+1;que.push(v);
-                now[v]=head[v];
-                if(v==t) return bool(true);
-            }
-        }
-        return bool(false);
-    }
-    LL dfs(int u,LL lst=2e18) {
-        if(u==t) return lst;
-        LL k,res=0;
-        for(int i=now[u];i&&lst;i=edge[i].nxt) {
-            now[u]=i;int v=edge[i].v;
-            if(dis[v]!=dis[u]+1||!edge[i].w) continue;
-            k=dfs(v,CheemsaDoge::min(lst,edge[i].w));
-            if(k==0) dis[v]=INF;
-            edge[i].w-=k;edge[i^1].w+=k;
-            res+=k;lst-=k;
-        }
-        return res;
-    }
-    LL calc() {LL ans=0;while(bfs()) ans+=dfs(s); return ans;}
-} using namespace Dinic;
-int f,d,tot;
+const int MAXN=6e5;const int MOD=998244353;
+/*---------------------------------pre------------------------------------*/
+
+
 signed main() {
 	// _File();
-	int tmp1,tmp2;
-	read(tmp1,tmp2);
-	n=tmp1*tmp2;
-	t=tot=tmp1*tmp2;
-	s=1;
-	for(int i=1;i<=tmp1;i++){
-		for(int j=1;j<tmp2;j++){
-			int w;
-			read(w);
-			add_edge((i-1)*tmp2+j,(i-1)*tmp2+j+1,w);
-			add_edge((i-1)*tmp2+j+1,(i-1)*tmp2+j,w);
+	while(1) {
+		LL n;read(n);LL ans=0;
+		if(!n) break;
+		for(int i=1;i<=n;i++) {
+			for(int j=i+1;j<=n;j++) ans+=__gcd(i,j); 
 		}
+		write(ans,'\n');
 	}
-	for(int i=1;i<tmp1;i++){
-		for(int j=1;j<=tmp2;j++){
-			int w;
-			read(w);
-			add_edge((i-1)*tmp2+j,i*tmp2+j,w);
-			add_edge(i*tmp2+j,(i-1)*tmp2+j,w);
-		}
-	}
-	for(int i=1;i<tmp1;i++){
-		for(int j=1;j<tmp2;j++){
-			int w;
-			read(w);
-			add_edge((i-1)*tmp2+j,i*tmp2+j+1,w);
-			add_edge(i*tmp2+j+1,(i-1)*tmp2+j,w);
-		}
-	}
-	write(calc());
 	return 0;
 }

@@ -2,82 +2,11 @@
  * @Author: CheemsaDoge
  * @Date: 2023-10-31 11:14:58
  * @LastEditors: CheemsaDoge
- * @LastEditTime: 2023-10-31 21:20:37
+ * @LastEditTime: 2023-11-01 09:51:07
  * @FilePath: \TEST\template_Dinic.cpp
  * -----------Have you ever loved Why today?-----------
  * Copyright (c) 2023 by CheemsaDoge, All Rights Reserved. 
  */
-#include <bits/stdc++.h>
-
-inline long long netflow(int s, int t, std::vector<std::vector<long long>> cap) {
-    const long long INF = 0x3f3f3f3f3f3f3f3f;
-    int n = (int)cap.size();
-    std::vector<int> pre(n), cur(n, 0), dep(n, 0), num(n, 0);
-    std::vector<long long> f(num[0] = n);
-    int u = s;
-    long long flow = INF, maxflow = 0;
-
-    while (dep[u] < n) {
-        f[u] = flow;
-        bool ok = false;
-
-        for (int v = cur[u]; v < n; v++) {
-            if (!cap[u][v] || dep[u] != dep[v] + 1)
-                continue;
-
-            ok = true, pre[v] = u, cur[u] = v, flow = std::min(cap[u][v], flow), u = v;
-
-            if (u == t) {
-                maxflow += flow;
-
-                while (u != s) {
-                    cap[pre[u]][u] -= flow;
-                    cap[u][pre[u]] += flow;
-                    u = pre[u];
-                }
-
-                flow = INF;
-            }
-
-            break;
-        }
-
-        if (ok)
-            continue;
-
-        if (--num[dep[u]] == 0)
-            break;
-
-        int c = -1;
-
-        for (int v = 0; v < n; v++)
-            if (cap[u][v] && (c == -1 || dep[v] < dep[c]))
-                c = v;
-
-        cur[u] = c, num[dep[u] = (~c ? dep[c] : n) + 1]++;
-
-        if (u != s)
-            u = pre[u], flow = f[u];
-    }
-
-    return maxflow;
-}
-#define add_edge(u,v,w) cap[u - 1][v - 1] += w;
-int main() {
-    int n, m, s, t;
-    scanf("%d%d%d%d", &n, &m, &s, &t);
-    std::vector<std::vector<long long>> cap(n, std::vector<long long>(n));
-    for (int i = 0; i < m; i++) {
-        int u, v, w;
-        scanf("%d%d%d", &u, &v, &w);
-        cap[u - 1][v - 1] += w;
-    }
-
-    printf("%lld\n", netflow(s - 1, t - 1, cap));
-    return 0;
-}
-
-
 const int MAXN=300;const int MOD=998244353;
 namespace Graph {
     struct Edge {
@@ -92,7 +21,7 @@ namespace Graph {
         edge[totr].v=v;
         edge[totr].w=w;
     }
-}using namespace Graph;
+} using namespace Graph;
 namespace EK { /*namespace CheemsaDoge and Graph is necessary*/
     LL ans=0;
     int pre[MAXN],n,m,s,t;
@@ -129,6 +58,38 @@ namespace EK { /*namespace CheemsaDoge and Graph is necessary*/
     inline void calc() {
         while(super_bfs()) update();
     }
-}
-using namespace EK;
-
+} using namespace EK;
+namespace Dinic { /*namespace CheemsaDoge and Graph is necessary*/
+    int n,m,s,t,now[MAXN];LL dis[MAXN];
+    const LL INF=2147483647;
+    bool bfs() {
+        for(int i=1;i<=n;i++) dis[i]=INF;
+        std::queue<int>que;
+        dis[s]=0;now[s]=head[s];que.push(s);
+        while(!que.empty()) {
+            int u=que.front();que.pop();
+            for(int i=head[u];i;i=edge[i].nxt) {
+                int v=edge[i].v;
+                if(dis[v]!=INF||!edge[i].w) continue;
+                dis[v]=dis[u]+1;que.push(v);
+                now[v]=head[v];
+                if(v==t) return bool(true);
+            }
+        }
+        return bool(false);
+    }
+    LL dfs(int u,LL lst=2e18) {
+        if(u==t) return lst;
+        LL k,res=0;
+        for(int i=now[u];i&&lst;i=edge[i].nxt) {
+            now[u]=i;int v=edge[i].v;
+            if(dis[v]!=dis[u]+1||!edge[i].w) continue;
+            k=dfs(v,CheemsaDoge::min(lst,edge[i].w));
+            if(k==0) dis[v]=INF;
+            edge[i].w-=k;edge[i^1].w+=k;
+            res+=k;lst-=k;
+        }
+        return res;
+    }
+    LL calc() {LL ans=0;while(bfs()) ans+=dfs(s); return ans;}
+} using namespace Dinic;
