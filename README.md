@@ -2,7 +2,7 @@
  * @Author: CheemsaDoge
  * @Date: 2023-10-26 15:26:15
  * @LastEditors: CheemsaDoge
- * @LastEditTime: 2023-10-31 21:23:42
+ * @LastEditTime: 2023-11-02 07:42:34
  * @FilePath: \TEST\README.md
  * Copyright (c) 2023 by CheemsaDoge, All Rights Reserved. 
 -->
@@ -27,3 +27,5 @@ $\mathcal{Update}\ in \ 2023.10.31\ 11:54$ 10.31上午考试代码提交
 $\mathcal{Update}\ in \ 2023.10.31\ 11:54$ 10.31下午练习代码提交
 
 $\mathcal{Update}\ in \ 2023.11.01\ 14:58$ 11.01上午练习代码提交
+
+$\mathcal{Update}\ in \ 2023.11.02\ 07:42$ 11.01下d午代码提交 

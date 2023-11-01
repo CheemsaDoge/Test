@@ -1,22 +1,11 @@
 /*** 
  * @Author: CheemsaDoge
- * @Date: 2023-11-01 08:47:10
+ * @Date: 2023-11-01 18:17:42
  * @LastEditors: CheemsaDoge
- * @LastEditTime: 2023-11-01 16:07:59
- * @FilePath: \TEST\2023.11.01test\Extreme gcd.cpp
- * @Scarborough Fair
- * @Are you going to Scarborough Fair?
- * @Parsley sage,rosemary and thyme.
+ * @LastEditTime: 2023-11-01 19:18:24
+ * @FilePath: \TEST\2023.11.01摸鱼\加密.cpp
+ * @Forgive me.
  * @Copyright (c) 2023 by ${git_name}, All Rights Reserved. 
- */
-/*** 
- * @Author: CheemsaDoge
- * @Date: 2023-11-01 08:47:10
- * @LastEditors: CheemsaDoge
- * @LastEditTime: 2023-11-01 16:01:18
- * @FilePath: \TEST\2023.11.01test\Extreme gcd.cpp
- * @-----------Have you ever loved Why today?-----------
- * @Copyright (c) 2023 by ${git_name_email}, All Rights Reserved. 
  */
 #include<bits/stdc++.h>
 namespace CheemsaDoge {
@@ -46,7 +35,7 @@ namespace CheemsaDoge {
 	template <typename type1> inline void write(type1 _x) {static char _q[65];int _cnt=0;if(_x<0)putchar('-'),_x=-_x;_q[++_cnt]=char(_x%10),_x/=10;while(_x)_q[++_cnt]=char(_x%10),_x/=10;while(_cnt)putchar(_q[_cnt--]+'0');}
 	template <> inline void write <char> (char _x) {putchar(_x);}
 	template <> inline void write <char*> (char *_x) {int siz=(int)strlen(_x);for(int i=0;i<siz;i++) write(_x[i]);}
-	template <typename types,typename ... Args> inline void read(types &_x, Args &... args) {read(_x), read(args...);}
+    template <typename types,typename ... Args> inline void read(types &_x, Args &... args) {read(_x), read(args...);}
 	template <typename types,typename ... Args> inline void write(types _x, Args ... args) {write(_x),putchar(' '),write(args...);}
 	using std::sort;using std::set;using std::vector;using std::pair;using std::make_pair;
 }
@@ -64,18 +53,21 @@ using namespace OI_File;
 // typedef __int128_t int128;
 const int MAXN=6e5;const int MOD=998244353;
 /*---------------------------------pre------------------------------------*/
-
-//i love genshit
-
-signed main() {
-	// _File();
-	while(1) {
-		LL n;read(n);LL ans=0;
-		if(!n) break;
-		for(int i=1;i<=n;i++) {
-			for(int j=i+1;j<=n;j++) ans+=__gcd(i,j); 
-		}
-		write(ans,'\n');
-	}
-	return 0;
+int pow10[10];
+int v[20]={0,2,4,8,16,32,64,128,256,512,1024,2048};
+int main() {
+    std::string a;
+    std::cin>>a;
+    pow10[0]=1;
+    for(int i=1;i<=9;i++) pow10[i]=10*pow10[i-1];
+    int len=a.length();
+    printf("Length:%d\n",*std::lower_bound(v,v+19,len*8));
+    for(int q=0;q<len;q++) {
+        std::stack<int>t;int tmp=a[q];
+        for(int i=0;i<=7;i++) {
+            t.push(tmp%2);
+            tmp>>=1;
+        }
+        while(!t.empty()) write(t.top()),t.pop(); 
+    }
 }
