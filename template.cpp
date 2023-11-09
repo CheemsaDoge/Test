@@ -39,6 +39,7 @@ namespace CheemsaDoge {
 	template <typename types,typename ... Args> inline void read(types &_x, Args &... args) {read(_x), read(args...);}
 	template <typename types,typename ... Args> inline void write(types _x, Args ... args) {write(_x),putchar(' '),write(args...);}
 	using std::sort;using std::set;using std::vector;using std::pair;using std::make_pair;
+	#define sqrt __builtin_sqrt
 }
 namespace OI_File{
 	inline void _File() {

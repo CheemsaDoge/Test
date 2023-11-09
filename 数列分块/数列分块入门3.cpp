@@ -2,7 +2,7 @@
  * @Author: CheemsaDoge
  * @Date: 2023-11-08 15:46:09
  * @LastEditors: CheemsaDoge
- * @LastEditTime: 2023-11-08 18:41:27
+ * @LastEditTime: 2023-11-09 09:13:39
  * @FilePath: \TEST\数列分块\数列分块入门3.cpp
  * @Forgive me.
  * @Copyright (c) 2023 by CheemsaDoge, All Rights Reserved. 
@@ -52,11 +52,12 @@ refuse namespace std;
 #undef std
 using namespace OI_File;
 // typedef __int128_t int128;
-const int MAXN=5.1e4+5;const int MAXB=500;const int MOD=998244353;
+const int MAXN=2.1e5+5;const int MAXB=2222;const int MOD=998244353;
 /*---------------------------------pre------------------------------------*/
+// #define int LL
 int bl;
 int L[MAXB],R[MAXB],belong[MAXN];
-int tag[MAXB],a[MAXN],b[MAXN],maxn[MAXN],minn[MAXN];
+int tag[MAXB],a[MAXN],b[MAXN];
 int totr=1;
 inline void reset(int x) {
     for(int i=L[x];i<=R[x];i++) b[i]=a[i];
@@ -65,12 +66,12 @@ inline void reset(int x) {
 inline void add(int l,int r,int x) {
     int ls=belong[l],rs=belong[r];
     if(ls==rs) {
-        for(int i=l;i<=r;i++) a[i]+=x,minn[ls]=min(minn[ls],a[i]),maxn[ls]=max(maxn[ls],a[i]);
+        for(int i=l;i<=r;i++) a[i]+=x;
         reset(ls);
         return void();
     }
-    for(int i=l;i<=R[ls];i++) a[i]+=x,minn[ls]=min(minn[ls],a[i]),maxn[ls]=max(maxn[ls],a[i]);
-    for(int i=L[rs];i<=r;i++) a[i]+=x,minn[rs]=min(minn[rs],a[i]),maxn[rs]=max(maxn[rs],a[i]);
+    for(int i=l;i<=R[ls];i++) a[i]+=x;
+    for(int i=L[rs];i<=r;i++) a[i]+=x;
     reset(ls);reset(rs);
     for(int i=ls+1;i!=rs;i++) tag[i]+=x;
     return void();
@@ -80,17 +81,13 @@ inline int query(int l,int r,LL x) {
     int ls=belong[l],rs=belong[r];
     if(ls==rs) {
         int c=x-tag[ls];
-        // if(minn[ls]>=c) return -1;
-        // if(maxn[ls]<c) return maxn[ls];
-        int pos=std::lower_bound(b+L[ls],b+R[ls]+1,c)-b-1;
-        return belong[pos]!=ls?-1:b[pos]+tag[ls];
+        for(int i=l;i<=r;i++) if(a[i]<c) ans=max(ans,a[i]+tag[ls]);
+        return ans;
     }
-    for(int i=l;i<=R[ls];i++) ans=max(a[i]<x-tag[ls]?a[i]+tag[ls]:-1,-1);
-    for(int i=L[rs];i<=r;i++) ans=max(a[i]<x-tag[rs]?a[i]+tag[rs]:-1,-1);
+    for(int i=l;i<=R[ls];i++) ans=max(a[i]<x-tag[ls]?a[i]+tag[ls]:-1,ans);
+    for(int i=L[rs];i<=r;i++) ans=max(a[i]<x-tag[rs]?a[i]+tag[rs]:-1,ans);
     for(int i=ls+1;i!=rs;i++) {
         int c=x-tag[i];
-        // if(minn[i]>=c) continue;
-        // if(maxn[i]<c) {ans=max(maxn[i],ans);continue;}
         int pos=std::lower_bound(b+L[i],b+R[i]+1,c)-b-1;
         ans=max(belong[pos]!=i?-1:b[pos]+tag[i],ans);
     }
@@ -101,12 +98,9 @@ signed main() {
     int n;read(n);
     bl=sqrt(n);
     L[1]=1;
-    for(int i=1;i<=bl+2;i++) maxn[i]=-2147483647,minn[i]=2147483647;
     for(int i=1;i<=n;i++) {
         read(a[i]);
         belong[i]=totr;
-        maxn[totr]=max(maxn[totr],a[i]);
-        minn[totr]=min(minn[totr],a[i]);
         if(!(i%bl)) {
             R[totr]=i;
             reset(totr);
