@@ -1,9 +1,9 @@
 /*** 
  * @Author: CheemsaDoge
- * @Date: 2023-11-08 15:46:09
+ * @Date: 2023-11-16 08:21:42
  * @LastEditors: CheemsaDoge
- * @LastEditTime: 2023-11-15 21:10:34
- * @FilePath: \TEST\数列分块\数列分块入门2.cpp
+ * @LastEditTime: 2023-11-16 08:27:33
+ * @FilePath: \TEST\面向tg选手的DP练习题\P1944 最长括号匹配.cpp
  * @Forgive me.
  * @Copyright (c) 2023 by CheemsaDoge, All Rights Reserved. 
  */
@@ -39,6 +39,7 @@ namespace CheemsaDoge {
 	template <typename types,typename ... Args> inline void read(types &_x, Args &... args) {read(_x), read(args...);}
 	template <typename types,typename ... Args> inline void write(types _x, Args ... args) {write(_x),putchar(' '),write(args...);}
 	using std::sort;using std::set;using std::vector;using std::pair;using std::make_pair;
+	#define sqrt __builtin_sqrt
 }
 namespace OI_File{
 	inline void _File() {
@@ -52,72 +53,20 @@ refuse namespace std;
 #undef std
 using namespace OI_File;
 // typedef __int128_t int128;
-const int MAXN=5.1e4+5;const int MAXB=500;const int MOD=998244353;
+const int MAXN=1.05e6;const int MOD=998244353;
 /*---------------------------------pre------------------------------------*/
-int bl;
-int L[MAXB],R[MAXB],belong[MAXN];
-int tag[MAXB],a[MAXN],b[MAXN],maxn[MAXN],minn[MAXN];
-int totr=1;
-inline void reset(int x) {
-    for(int i=L[x];i<=R[x];i++) b[i]=a[i];
-    sort(b+L[x],b+R[x]+1);
-}
-inline void add(int l,int r,int x) {
-    int ls=belong[l],rs=belong[r];
-    if(ls==rs) {
-        for(int i=l;i<=r;i++) a[i]+=x,minn[ls]=min(minn[ls],a[i]),maxn[ls]=max(maxn[ls],a[i]);
-        reset(ls);
-        return void();
-    }
-    for(int i=l;i<=R[ls];i++) a[i]+=x,minn[ls]=min(minn[ls],a[i]),maxn[ls]=max(maxn[ls],a[i]);
-    for(int i=L[rs];i<=r;i++) a[i]+=x,minn[rs]=min(minn[rs],a[i]),maxn[rs]=max(maxn[rs],a[i]);
-    reset(ls);reset(rs);
-    for(int i=ls+1;i!=rs;i++) tag[i]+=x;
-    return void();
-}
-inline int query(int l,int r,LL x) {
-    int ans=0;
-    int ls=belong[l],rs=belong[r];
-    if(ls==rs) {
-        int c=x-tag[ls];
-        if(minn[ls]>=c) return 0;
-        if(maxn[ls]<c) {ans+=r-l+1;return ans;}
-        for(int i=l;i<=r;i++) ans+=a[i]<x-tag[ls];
-        return ans;
-    }
-    for(int i=l;i<=R[ls];i++) ans+=a[i]<x-tag[ls];
-    for(int i=L[rs];i<=r;i++) ans+=a[i]<x-tag[rs];
-    for(int i=ls+1;i!=rs;i++) {
-        int c=x-tag[i];
-        if(minn[i]>=c) continue;
-        if(maxn[i]<c) { ans+=R[i]-L[i]+1;continue;}
-        ans+=std::lower_bound(b+L[i],b+R[i]+1,c)-b-L[i];
-    }
-    return ans;
-}
+int f[MAXN];
+char a[MAXN];
+int ans,maxn;
 signed main() {
-	// _File();
-    int n;read(n);
-    bl=sqrt(n);
-    L[1]=1;
-    for(int i=1;i<=bl+2;i++) maxn[i]=-2147483647,minn[i]=2147483647;
-    for(int i=1;i<=n;i++) {
-        read(a[i]);
-        belong[i]=totr;
-        maxn[totr]=max(maxn[totr],a[i]);
-        minn[totr]=min(minn[totr],a[i]);
-        if(!(i%bl)) {
-            R[totr]=i;
-            reset(totr);
-            L[++totr]=i+1;
-        }
+	scanf("%s",a+1);
+    int len=strlen(a+1);
+    for(int i=2;i<=len;i++) {
+        if(a[i]==')'&&a[i-1-f[i-1]]=='('||a[i]==']'&&a[i-1-f[i-1]]=='[') f[i]=f[i-1]+2+f[i-2-f[i-1]];
+        if(f[i]>maxn) ans=i,maxn=f[i];
     }
-    if(n%bl) R[totr]=n,reset(totr);
-    for(int qq=1;qq<=n;qq++) {
-        int op,l,r,x;
-        read(op,l,r,x);
-        if(!op) add(l,r,x);
-        else __builtin_printf("%d\n",query(l,r,1ll*x*x));
+    for(int i=ans-f[ans]+1;i<=ans;i++) {
+        write(a[i]);
     }
 	return 0;
 }

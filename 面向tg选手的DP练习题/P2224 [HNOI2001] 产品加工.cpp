@@ -1,9 +1,9 @@
 /*** 
  * @Author: CheemsaDoge
- * @Date: 2023-11-08 15:46:09
+ * @Date: 2023-10-26 07:57:50
  * @LastEditors: CheemsaDoge
- * @LastEditTime: 2023-11-15 21:10:34
- * @FilePath: \TEST\数列分块\数列分块入门2.cpp
+ * @LastEditTime: 2023-11-16 09:25:33
+ * @FilePath: \TEST\面向tg选手的DP练习题\P2224 [HNOI2001] 产品加工.cpp
  * @Forgive me.
  * @Copyright (c) 2023 by CheemsaDoge, All Rights Reserved. 
  */
@@ -24,13 +24,6 @@ namespace CheemsaDoge {
 	inline void sread(char *_in) {int _ch=getchar(),top=0;while(_ch==' '||_ch=='\r'||_ch=='\n'||_ch=='\t') _ch=getchar();while(!(_ch==' '||_ch=='\r'||_ch=='\n'||_ch=='\t')) _in[++top]=_ch,_ch=getchar();_in[++top]=0;}
 	template <typename type1> inline void read(type1 &_x) {_x=0;type1 _w=1,_ch=getchar();while(!isdigit(_ch)&&_ch!='-')_ch=getchar();if(_ch=='-')_w=-1,_ch=getchar();while(isdigit(_ch))_x=(_x<<3)+(_x<<1)+(_ch^'0'),_ch=getchar();_x=_x*_w;}//fast input
 	template <> inline void read <char>(char &_in) {_in=(char)getchar();while(_in==' '||_in=='\n') _in=(char)getchar();}
-/** @brief 计算某数的多次方对mod取模后的答案 
-  * @description: 计算某数的多次方对mod取模后的答案
-  * @param {type1} _a 底数(返回值类型以此为主)
-  * @param {type2} _n 次数
-  * @param {type3} __mod 模数(不填则默认为2,305,843,009,213,693,952(2^61))
-  * @return {*} _a的_n次方对__mod取模(类型以底数类型为准)
-  */
  	template <typename type1,typename type2> type1 pow(type1 _a,type2 _n,LL __mod=2305843009213693952ll) {type1 _ans=1;_a%=__mod;while(_n) {if(_n&1) _ans=_ans*_a%__mod;_n>>=1;_a=_a*_a%__mod;}return _ans;}
 	template <typename type1> inline type1 __gcd(type1 _a,type1 _b) {if(!_a||!_b) return _a==0?_b:_a;type1 az=__builtin_ctz(_a),bz=__builtin_ctz(_b);type1 z=min(az,bz),dif;_b>>=bz;while(_a) {_a>>=az;dif=_b-_a;az=__builtin_ctz(dif);if(_a<_b) _b=_a;_a=dif<0?-dif:dif;}return _b<<z;}
 	template <typename type1> inline void write(type1 _x) {static char _q[65];int _cnt=0;if(_x<0)putchar('-'),_x=-_x;_q[++_cnt]=char(_x%10),_x/=10;while(_x)_q[++_cnt]=char(_x%10),_x/=10;while(_cnt)putchar(_q[_cnt--]+'0');}
@@ -39,6 +32,9 @@ namespace CheemsaDoge {
 	template <typename types,typename ... Args> inline void read(types &_x, Args &... args) {read(_x), read(args...);}
 	template <typename types,typename ... Args> inline void write(types _x, Args ... args) {write(_x),putchar(' '),write(args...);}
 	using std::sort;using std::set;using std::vector;using std::pair;using std::make_pair;
+	#define sqrt __builtin_sqrt
+	#define printf __builtin_printf
+	#define scanf __builtin_scanf
 }
 namespace OI_File{
 	inline void _File() {
@@ -51,73 +47,45 @@ namespace OI_File{
 refuse namespace std;
 #undef std
 using namespace OI_File;
-// typedef __int128_t int128;
-const int MAXN=5.1e4+5;const int MAXB=500;const int MOD=998244353;
+const int MAXN=1.05e6;
+const int MAXM=1.05e6;
+const int INF=2147483647;
+const int MOD=998244353;
 /*---------------------------------pre------------------------------------*/
-int bl;
-int L[MAXB],R[MAXB],belong[MAXN];
-int tag[MAXB],a[MAXN],b[MAXN],maxn[MAXN],minn[MAXN];
-int totr=1;
-inline void reset(int x) {
-    for(int i=L[x];i<=R[x];i++) b[i]=a[i];
-    sort(b+L[x],b+R[x]+1);
+int n;
+int t1[MAXN],t2[MAXN],t3[MAXN];
+int dp[MAXN];
+inline void data_init() {
+	read(n);
+    for(int i=1;i<=n;i++) read(t1[i],t2[i],t3[i]);
 }
-inline void add(int l,int r,int x) {
-    int ls=belong[l],rs=belong[r];
-    if(ls==rs) {
-        for(int i=l;i<=r;i++) a[i]+=x,minn[ls]=min(minn[ls],a[i]),maxn[ls]=max(maxn[ls],a[i]);
-        reset(ls);
-        return void();
-    }
-    for(int i=l;i<=R[ls];i++) a[i]+=x,minn[ls]=min(minn[ls],a[i]),maxn[ls]=max(maxn[ls],a[i]);
-    for(int i=L[rs];i<=r;i++) a[i]+=x,minn[rs]=min(minn[rs],a[i]),maxn[rs]=max(maxn[rs],a[i]);
-    reset(ls);reset(rs);
-    for(int i=ls+1;i!=rs;i++) tag[i]+=x;
-    return void();
-}
-inline int query(int l,int r,LL x) {
-    int ans=0;
-    int ls=belong[l],rs=belong[r];
-    if(ls==rs) {
-        int c=x-tag[ls];
-        if(minn[ls]>=c) return 0;
-        if(maxn[ls]<c) {ans+=r-l+1;return ans;}
-        for(int i=l;i<=r;i++) ans+=a[i]<x-tag[ls];
-        return ans;
-    }
-    for(int i=l;i<=R[ls];i++) ans+=a[i]<x-tag[ls];
-    for(int i=L[rs];i<=r;i++) ans+=a[i]<x-tag[rs];
-    for(int i=ls+1;i!=rs;i++) {
-        int c=x-tag[i];
-        if(minn[i]>=c) continue;
-        if(maxn[i]<c) { ans+=R[i]-L[i]+1;continue;}
-        ans+=std::lower_bound(b+L[i],b+R[i]+1,c)-b-L[i];
-    }
-    return ans;
-}
-signed main() {
-	// _File();
-    int n;read(n);
-    bl=sqrt(n);
-    L[1]=1;
-    for(int i=1;i<=bl+2;i++) maxn[i]=-2147483647,minn[i]=2147483647;
+inline void solve() {
+    memset(dp, 0x45, sizeof(dp));
+    dp[0]=0;
+    int up=0;
     for(int i=1;i<=n;i++) {
-        read(a[i]);
-        belong[i]=totr;
-        maxn[totr]=max(maxn[totr],a[i]);
-        minn[totr]=min(minn[totr],a[i]);
-        if(!(i%bl)) {
-            R[totr]=i;
-            reset(totr);
-            L[++totr]=i+1;
+        up+=max(t1[i],t3[i]);
+        for(int j=up;j>=0;j--) {
+            int p=0x3f3f3f3f;
+            if (j >= t1[i]) p = dp[j - t1[i]];
+            int q = dp[j] + t2[i];
+            int r = 0x3f3f3f3f;
+            if (j >= t3[i]) r = dp[j - t3[i]] + t3[i];
+            if (t1[i] == 0) p = 0x3f3f3f3f;
+            if (t2[i] == 0) q = 0x3f3f3f3f;
+            if (t3[i] == 0) r = 0x3f3f3f3f;
+            dp[j] = min(p,min(q,r));
         }
     }
-    if(n%bl) R[totr]=n,reset(totr);
-    for(int qq=1;qq<=n;qq++) {
-        int op,l,r,x;
-        read(op,l,r,x);
-        if(!op) add(l,r,x);
-        else __builtin_printf("%d\n",query(l,r,1ll*x*x));
+    int ans=INF;
+    for(int j=1;j<=up;j++) {
+        ans=min(ans,max(j,dp[j]));
     }
+    write(ans);
+}
+signed main(int argc,char **argv[]) {
+	// _File();
+    data_init();
+    solve();
 	return 0;
 }
